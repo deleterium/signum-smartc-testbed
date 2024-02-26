@@ -244,8 +244,8 @@ ${code}`;
       (p, c) => Math.max(c.blockheight ?? 0, p),
       0,
     );
-    this.Node.forgeUntilBlock(lastScenarioBlock + 2);
-    console.debug(`Blocks forged until height ${this.Node.forgeBlock()}.`);
+    const currentBlock = this.Node.forgeUntilBlock(lastScenarioBlock + 2);
+    console.debug(`runScenario: Blocks forged until height ${currentBlock}.`);
     return this;
   }
 
@@ -333,7 +333,7 @@ ${code}`;
   ): BlockchainTransactionObj[] {
     const contract = this.getContract(address);
     TXs.forEach((tx) => {
-      tx.blockheight = this.Node.Blockchain.getCurrentBlock() + 1;
+      tx.blockheight = this.Node.Blockchain.getCurrentBlock();
       tx.recipient = contract.contract;
     });
     const status = this.Node.appendScenario(this.toSimulatorTransactions(TXs));
@@ -343,6 +343,9 @@ ${code}`;
       );
     }
     const height = this.Node.forgeBlocks(2);
+    console.debug(
+      `sendTransactionAndGetResponse: Blocks forged until height ${height}.`,
+    );
     return this.getTransactionsSentByContract(height);
   }
 }

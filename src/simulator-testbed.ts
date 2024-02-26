@@ -191,6 +191,38 @@ ${code}`;
   }
 
   /**
+   * Retrieves an array with the maps values per contract per key1.
+   *
+   * @param {bigint} key1 - 1st Key.
+   * @param {bigint} key2FirstIndex - 1st item of key2 to be returned.
+   * @param {bigint} key2LastIndex - last item of key2 (not included in return array).
+   * @param {bigint} address - The contract address (default: the last deployed).
+   * @return {any} The array with map values (not sparse, missing items changed to zero).
+   */
+  getContractMapAsArray(
+    key1: bigint,
+    key2FirstIndex: bigint,
+    key2LastIndex: bigint,
+    address?: bigint,
+  ): bigint[] {
+    if (!address) {
+      address = this.Node.Simulator.CurrentContract?.contract;
+    }
+    if (!address) {
+      throw new Error("Contract not specified");
+    }
+    const ContractMap =
+      this.Node.Blockchain.maps.find((M) => M.id === address)?.map ?? [];
+    const retArray = [];
+    for (let ii = key2FirstIndex; ii < key2LastIndex; ii++) {
+      retArray.push(
+        ContractMap.find((m) => m.k1 === key1 && m.k2 === ii)?.value ?? 0n,
+      );
+    }
+    return retArray;
+  }
+
+  /**
    * Retrieves a list of (key-value)-tuples from a map per slot.
    *
    * @param key1 1st Key
